@@ -1,0 +1,48 @@
+<project name="app" basedir=".">
+
+    <property name="war-file" value="${ant.project.name}.war"/>
+    <property name="src-dir" value="src"/>
+    <property name="build-dir" value="classes"/>
+    <property name="webxml-file" value="src/WEB-INF/web.xml"/>
+    <property name="lib-dir" value="lib"/>
+    <property name="deploy-dir" value="/var/lib/tomcat9/webapps/"/>
+
+    <presetdef name="javac">
+        <javac includeantruntime="false" />
+    </presetdef>
+
+    <path id="build.classpath">
+        <fileset dir="${basedir}/">
+            <include name="${lib-dir}/*.jar"/>
+        </fileset>
+    </path>
+    <target name="compile" depends="">
+        <mkdir dir="${build-dir}"/>
+        <javac srcdir="${src-dir}" destdir="${build-dir}">
+            <classpath>
+                <path id="build.classpath">
+                    <fileset dir="${basedir}/">
+                        <include name="${lib-dir}/*.jar"/>
+                    </fileset>
+                </path>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="war" depends="compile">
+        <war warfile="${war-file}" webxml="${webxml-file}">
+            <classes dir="${build-dir}"/>
+            <lib dir="${lib-dir}"/>
+        </war>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build-dir}"/>
+        <delete file="${war-file}"/>
+    </target>
+
+    <target name='deploy' depends='war' description='copy the war file to the app server'>
+        <copy todir='${deploy-dir}' file='${war-file}'/>
+    </target>
+
+</project>
